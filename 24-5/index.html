@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Máy Tính Đơn Giản</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Máy Tính Đơn Giản</h1>
+    <input type="number" id="num1" placeholder="Nhập số thứ nhất" required>
+    <input type="number" id="num2" placeholder="Nhập số thứ hai" required>
+    <br>
+    <button onclick="calculate('sum')">Cộng</button>
+    <button onclick="calculate('subtract')">Trừ</button>
+    <button onclick="calculate('divide')">Chia</button>
+    <button onclick="calculate('multiply')">Nhân</button>
+    <div id="result"></div>
+
+    <script>
+        async function calculate(operation) {
+            const num1 = Number(document.getElementById('num1').value);
+            const num2 = Number(document.getElementById('num2').value);
+            const resultDiv = document.getElementById('result');
+
+            if (!num1 || !num2) {
+                resultDiv.innerText = 'Vui lòng nhập cả hai số';
+                return;
+            }
+
+            const response = await fetch(`http://localhost:3000/${operation}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ num1, num2 })
+            });
+
+            const data = await response.json();
+            resultDiv.innerText = `Kết quả: ${data.result}`;
+        }
+    </script>
+</body>
+</html>
