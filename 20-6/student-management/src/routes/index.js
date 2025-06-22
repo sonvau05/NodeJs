@@ -1,0 +1,17 @@
+const express = require('express');
+const Service = require('../app/service');
+const MySQLRepo = require('../app/mysqlRepo');
+const { Student, Course, Enrollment } = require('../config/db');
+const router = express.Router();
+const studentService = new Service(new MySQLRepo(Student), new MySQLRepo(Enrollment));
+const courseService = new Service(new MySQLRepo(Course));
+router.post('/students', async (req, res) => res.status(201).json(await studentService.create(req.body, true)));
+router.get('/students/:id', async (req, res) => res.json(await studentService.get(req.params.id) || { error: 'Not found' }));
+router.put('/students/:id', async (req, res) => res.json(await studentService.update(req.params.id, req.body)));
+router.delete('/students/:id', async (req, res) => { await studentService.delete(req.params.id); res.status(204).send(); });
+router.post('/students/:id/enroll/:courseId', async (req, res) => { await studentService.enroll(req.params.id, req.params.courseId); res.status(201).send(); });
+router.post('/courses', async (req, res) => res.status(201).json(await courseService.create(req.body, false)));
+router.get('/courses/:id', async (req, res) => res.json(await courseService.get(req.params.id) || { error: 'Not found' }));
+router.put('/courses/:id', async (req, res) => res.json(await courseService.update(req.params.id, req.body)));
+router.delete('/courses/:id', async (req, res) => { await courseService.delete(req.params.id); res.status(204).send(); });
+module.exports = router;
